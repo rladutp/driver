@@ -14,12 +14,21 @@ public class PolicyHandler{
     public void onStringEventListener(@Payload String eventString){
 
     }
-
+    @Autowired
+    DriverRepository driverRepository;
     @StreamListener(KafkaProcessor.INPUT)
     public void wheneverCancelOrderRequested_ReceiveCancelOrder(@Payload CancelOrderRequested cancelOrderRequested){
 
         if(cancelOrderRequested.isMe()){
             System.out.println("##### listener ReceiveCancelOrder : " + cancelOrderRequested.toJson());
+
+            Driver driver = new Driver();
+            driverRepository.findById(Long.valueOf(cancelOrderRequested.getOrderId())).ifPresent((Driver)->{
+                Driver.setDriverId(cancelOrderRequested.getDriverId());
+                Driver.setStatus("OrderCanceled");
+                driverRepository.save(Driver);
+            });
+
         }
     }
 

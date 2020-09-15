@@ -45,7 +45,7 @@ import java.util.List;
    System.out.println("### test2 " + pickDriver.getOrderId() + "  random1  :  "+random1);
    System.out.println("######################################################################## ");
    //agree를 좀 더 자주 호출되게 하기 위해 조절
-   if (random1 > 4) {
+   if (random1 > 2) {
     pickDriver.setStatus("Agreed");
    } else {
     pickDriver.setStatus("Declined");
