@@ -83,7 +83,7 @@ phases:
                       - name: api.url.hr
                         valueFrom:
                           configMapKeyRef:
-                            name: a-config
+                            name: dh-config
                             key: api.url.hr
                     resources:
                       limits:
