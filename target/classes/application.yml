@@ -35,6 +35,10 @@ logging:
   level:
     org.hibernate.type: trace
     org.springframework.cloud: debug
+## Local용
+api:
+  url:
+    hr: http://localhost:8085
 server:
   port: 8083
 ---

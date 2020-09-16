@@ -2,8 +2,8 @@ version: 0.2
 
 env:
   variables:
-    IMAGE_REPO_NAME: "a-driver"
-    _PROJECT_NAME: "a-driver"
+    IMAGE_REPO_NAME: "dh-driver"
+    _PROJECT_NAME: "dh-driver"
 
 phases:
   install:
@@ -79,6 +79,12 @@ phases:
                     image: $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$_PROJECT_NAME:$CODEBUILD_RESOLVED_SOURCE_VERSION
                     ports:
                       - containerPort: 8080
+                    env:
+                      - name: api.url.hr
+                        valueFrom:
+                          configMapKeyRef:
+                            name: a-config
+                            key: api.url.hr
                     resources:
                       limits:
                         cpu: 500m
