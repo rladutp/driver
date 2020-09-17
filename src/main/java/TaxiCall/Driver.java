@@ -32,15 +32,6 @@ public class Driver {
                         .inputDr(hr);
                 System.out.println("1234");
 
-                //view에 넣기 위해 카프카로 보낸다.
-
-                Registered registered = new Registered();
-                registered.setDriverId(hr.getDriverId());
-                registered.setDriverStatus(hr.getDriverStatus());
-                BeanUtils.copyProperties(this, registered);
-                registered.publishAfterCommit();
-                System.out.println("5678");
-
             }
 
     }
@@ -77,7 +68,7 @@ public class Driver {
     @PostUpdate
     public void onPostUpdate(){
         System.out.println("START2");
-
+        //기사 퇴직
         if(this.getDriverStatus().equals("retired")){
             System.out.println("##### status is retired #####");
             Retired retired = new Retired();
@@ -88,30 +79,31 @@ public class Driver {
             BeanUtils.copyProperties(this, retired);
             retired.publishAfterCommit();
 
-        }
+        }else {
+            //퇴직하지 않은 기사에 한해서 동의나 거절을 보낸다.
+            if(null != this.getStatus()&&!"".equals(this.getStatus())){
+                if (this.getStatus().equals("Agreed")) {
+                    System.out.println("seq1");
+                    OrderAgreed orderAgreed = new OrderAgreed();
 
-        if(null != this.getStatus()&&!"".equals(this.getStatus())){
-            if (this.getStatus().equals("Agreed")) {
-                System.out.println("seq1");
-                OrderAgreed orderAgreed = new OrderAgreed();
+                    orderAgreed.setOrderId(this.getOrderId());
+                    orderAgreed.setStatus("Agreed");
+                    orderAgreed.setDriverId(this.getDriverId());
 
-                orderAgreed.setOrderId(this.getOrderId());
-                orderAgreed.setStatus("Agreed");
-                orderAgreed.setDriverId(this.getDriverId());
+                    BeanUtils.copyProperties(this, orderAgreed);
+                    orderAgreed.publishAfterCommit();
 
-                BeanUtils.copyProperties(this, orderAgreed);
-                orderAgreed.publishAfterCommit();
+                } else if (this.getStatus().equals("Declined")) {
+                    System.out.println("seq2");
+                    OrderDeclined orderDeclined = new OrderDeclined();
 
-            } else if (this.getStatus().equals("Declined")) {
-                System.out.println("seq2");
-                OrderDeclined orderDeclined = new OrderDeclined();
+                    orderDeclined.setOrderId(this.getOrderId());
+                    orderDeclined.setStatus("Declined");
+                    orderDeclined.setDriverId(this.getDriverId());
 
-                orderDeclined.setOrderId(this.getOrderId());
-                orderDeclined.setStatus("Declined");
-                orderDeclined.setDriverId(this.getDriverId());
-
-                BeanUtils.copyProperties(this, orderDeclined);
-                orderDeclined.publishAfterCommit();
+                    BeanUtils.copyProperties(this, orderDeclined);
+                    orderDeclined.publishAfterCommit();
+                }
             }
         }
 
